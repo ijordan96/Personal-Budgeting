@@ -28,4 +28,8 @@ const getAllEnvelopes = () => {
     return envelopes
 }
 
-module.exports = {addEnvelope, getAllEnvelopes}
+const getSpecificEnvelope = (category) => {
+    return envelopes.find((envelope) =>  envelope.category === category )
+}
+
+module.exports = {addEnvelope, getAllEnvelopes, getSpecificEnvelope}

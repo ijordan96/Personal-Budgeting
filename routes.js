@@ -15,8 +15,13 @@ envelopeRouter.post('/', (req, res, next) => {
 })
 
 envelopeRouter.get('/', (req, res, next) => {
-    res.send(envelopes.getAllEnvelopes())
+    if(!req.query.name){
+        return res.send(envelopes.getAllEnvelopes())
+    }
+    res.send(envelopes.getSpecificEnvelope(req.query.name))
 })
+
+
 
 
 
