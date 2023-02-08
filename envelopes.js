@@ -7,16 +7,25 @@ const envelopes = []
 */
 
 const isValidEnvelope = (possibleEnvelope) => {
-    const {category, budget} = possibleEnvelope
-    return typeof category === 'string' && !isNaN(budget)
-
+    if(possibleEnvelope){
+        const {category, budget} = possibleEnvelope
+        return typeof category === 'string' && !isNaN(budget)
+    }
+    return false
 }
 
 
 const addEnvelope = (envelope) => {
-    if (!envelope){
+    if (isValidEnvelope(envelope)){
+        envelope.budget = parseFloat(envelope.budget)
         envelopes.push(envelope)
+        return true
     }
+    return false
 }
 
-module.exports = envelopes
+const getAllEnvelopes = () => {
+    return envelopes
+}
+
+module.exports = {addEnvelope, getAllEnvelopes}
