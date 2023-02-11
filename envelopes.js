@@ -14,6 +14,12 @@ const isValidEnvelope = (possibleEnvelope) => {
     return false
 }
 
+const envelopeExist = (category) => {
+    return envelopes.findIndex((envelope) => {
+        return envelope.category === category 
+    })
+}
+
 
 const addEnvelope = (envelope) => {
     if (isValidEnvelope(envelope)){
@@ -32,4 +38,12 @@ const getSpecificEnvelope = (category) => {
     return envelopes.find((envelope) =>  envelope.category === category )
 }
 
-module.exports = {addEnvelope, getAllEnvelopes, getSpecificEnvelope}
+const updateEnevelope = (envelopeIndex, updatedEnvelope) => {
+    if (isValidEnvelope(updateEnevelope)) {
+        envelopes[envelopeIndex] = updatedEnvelope
+        return true
+    }
+    return false
+}
+
+module.exports = {addEnvelope, getAllEnvelopes, getSpecificEnvelope, envelopeExist, updateEnevelope}
