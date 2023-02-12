@@ -11,12 +11,8 @@ app.use(cors());
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-app.use('/envelope', envelopeRouter)
+app.use('/envelopes', envelopeRouter)
 
-app.get('/', (req,res,next) => {
-    res.send('Hi')
-
-})
 
 app.listen(4001, () => {
     console.log('listening on port 4001')

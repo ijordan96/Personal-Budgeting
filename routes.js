@@ -24,15 +24,19 @@ envelopeRouter.get('/', (req, res, next) => {
 envelopeRouter.param('category', (req,res,next,id) => {
     const envelopePos = envelopes.envelopeExist(id)
     if(envelopePos === -1){
-      return  res.status(404).send('Envelope doesn not exist')
+      return  res.status(404).send({
+        'response' : "Envelope doesn't exist"
+    })
     }
     req.categoryIndex = envelopePos
     next()
 })
 
+
+
 envelopeRouter.put('/:category', (req, res, next) => {
     const envelopePos = req.categoryIndex
-    const updatedEnvelope = envelopes.updateEnevelope(envelopePos, req.body)
+    const updatedEnvelope = envelopes.updateEnvelope(envelopePos, req.body)
     if(updatedEnvelope){
         return res.send({
             'response' : 'Envelope Updated'
@@ -43,5 +47,46 @@ envelopeRouter.put('/:category', (req, res, next) => {
     })
 })
 
+envelopeRouter.delete('/:category', (req, res, next) => {
+    const envelopePos = req.categoryIndex
+    const deletedEnvelope = envelopes.deleteEnvelope(envelopePos)
+    if (deletedEnvelope) res.status(204).send({
+        'response' : "Envelope Deleted"
+    })
+})
 
+
+envelopeRouter.param('from', (req,res,next,id) => {
+    const envelopePos = envelopes.envelopeExist(id)
+    if(envelopePos === -1){
+      return  res.status(404).send({
+        'response' : "Envelope to substract budget doesn't exist"
+    })
+    }
+    req.fromIndex = envelopePos
+    next()
+})
+
+envelopeRouter.param('to', (req,res,next,id) => {
+    const envelopePos = envelopes.envelopeExist(id)
+    if(envelopePos === -1){
+      return  res.status(404).send({
+        'response' : "Envelope to transfer doesn't exist"
+    })
+    }
+    req.toIndex = envelopePos
+    next()
+})
+envelopeRouter.post('/transfer/:from/:to', (req, res, next) => {
+    const budgetToTransfer = req.body.budget
+    const transferMoney = envelopes.transferEnvelope(req.fromIndex,req.toIndex,budgetToTransfer)
+    if (transferMoney){
+        return res.send({
+            'response' : "Envelope transfer succesful"
+        })
+    }
+    res.status(500).send({
+        'response' : "Envelope transfer was not possiblez"
+    })
+})
 module.exports = envelopeRouter
