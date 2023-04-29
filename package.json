@@ -1,0 +1,25 @@
+{
+  "name": "personal-budget-ii",
+  "version": "1.0.0",
+  "description": "I'm just starting using Node.JS and Express to work on APIs. This project works with the [Envolope Budgeting](https://www.thebalancemoney.com/what-is-envelope-budgeting-1293682). This is part of the Backend Engineer path from Codecademy.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ijordan96/Personal-Budgeting.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ijordan96/Personal-Budgeting/issues"
+  },
+  "homepage": "https://github.com/ijordan96/Personal-Budgeting#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "nodemon": "^2.0.22",
+    "pg": "^8.10.0"
+  }
+}
