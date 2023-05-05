@@ -7,7 +7,7 @@ envelopeRouter.post('/', async (req, res, next) => {
     if(addition){
         return res.send({
             'response' : 'Envelope Added',
-            'addedEnvelop' : addition
+            'addedEnvelope' : addition
         })
     }
     res.status(400).send({
