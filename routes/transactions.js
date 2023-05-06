@@ -10,7 +10,7 @@ transactionsRouter.post('/', async (req, res, next) => {
             'transactionDone' : transactionDone
         })
     }
-    res.status(500).send({
+    res.status(400).send({
         'response' : `Transaction not possible: ` + message
     })
 })
@@ -19,12 +19,14 @@ transactionsRouter.get('/', async (req, res, next) => {
     var specificTransaction;
     if(!req.query.id){
         const allTransactions = await transactions.getTransactions()
-        return res.send(allTransactions)
+        return res.send(
+            {allTransactions}
+            )
     }
     specificTransaction = await transactions.getSpecificTransaction(req.query.id)
     if (!specificTransaction){
         return  res.status(404).send({
-            'response' : "No transactions registered"
+            'response' : "Transaction doesn't exist"
         })
     }
     res.status(200).json(specificTransaction)
@@ -47,11 +49,11 @@ transactionsRouter.put('/:id', async (req, res, next) => {
     if(updatedTransaction){
         return res.send({
             'response' : 'Transaction Updated',
-            'newEnvelope' : updatedTransaction
+            'updatedTransaction' : updatedTransaction
         })
     }
     res.status(400).send({
-        'response' : "It wasn't possible to update an envelope: " + message
+        'response' : "It wasn't possible to update the transaction: " + message
     })
 })
 

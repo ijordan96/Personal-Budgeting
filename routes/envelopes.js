@@ -21,7 +21,7 @@ envelopeRouter.get('/', async (req, res, next) => {
     var specificEnvelope;
     if(!req.query.name && !req.query.id){
         const allEvenlopes = await envelopes.getAllEnvelopes()
-        return res.status(200).json(allEvenlopes)
+        return res.status(200).json({allEvenlopes})
     }
     if(req.query.id){
         specificEnvelope = await envelopes.getSpecificEnvelope('id',req.query.id)
@@ -104,8 +104,8 @@ envelopeRouter.post('/transfer/:from/:to', async (req, res, next) => {
         return res.send({
             'response' : "Envelope transfer succesful",
             'updates' : {
-                'updatedFromEnvelope' : transferMoney.updatedFrom,
-                'updatedToEnvelope' : transferMoney.updatedTo
+                'updatedFromEnvelope' : transferMoney.updatedFrom[1],
+                'updatedToEnvelope' : transferMoney.updatedTo[1]
             }
         })
     }

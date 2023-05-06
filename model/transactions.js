@@ -12,12 +12,15 @@ const pool = new Pool({
 const isValidTransaction = async (possibleTransaction) => {
     if(possibleTransaction){
         const {amount,recipient,envelope_id} = possibleTransaction
-        const amountRecipient = typeof recipient === 'string' && !isNaN(amount)
-        if (amountRecipient){
+        const validAmount =  !isNaN(amount)
+        const validRecipient = typeof recipient === 'string'
+        if (validAmount && validRecipient){
             const actualEnvelope = await envelopes.getSpecificEnvelope('id',envelope_id)
+            if (!actualEnvelope) return ["Envelope doesn't exist", null]
             return actualEnvelope
         } else {
-            return null
+            if(!validAmount) return ["Not valid amount", null]
+            if(!validRecipient) return ["Not valid recipient", null]
         }
     }
     return null
@@ -34,7 +37,7 @@ const updateEnevelopeProcess = async (category, budget, envelopeToUpdate) => {
 
 const addTransaction = async (transaction) => {
     const actualEnvelope = await isValidTransaction(transaction)
-    if (!actualEnvelope) return ["envelope doesn't exist", null]
+    if (actualEnvelope instanceof Array) return actualEnvelope
     const envelopeBudget = parseFloat(actualEnvelope.amount)
     const transactionBudget = parseFloat(transaction.amount)
     if (transactionBudget > envelopeBudget) return ["envelope doesn't have the budget",null]
@@ -49,7 +52,7 @@ const addTransaction = async (transaction) => {
         const timestamp = await pool.query(timestampQuery)
         const insertQuery = {
             text: 'INSERT INTO transactions (payment_date,payment_amount,payment_recipient,envelope_id) VALUES ($1,$2,$3,$4) RETURNING *',
-            values: [/*timestamp.rows[0].now*/'2016-06-22 19:10:25',transaction.amount,transaction.recipient,transaction.envelope_id]
+            values: [timestamp.rows[0].now,transaction.amount,transaction.recipient,transaction.envelope_id]
         }
         const [message,newEnvelope] = await envelopes.updateEnvelope(actualEnvelope,updatedEnvelope)
         if(!newEnvelope) return [message,null]
@@ -104,6 +107,7 @@ const deleteTransaction = async (actualTransaction) => {
 
 const updateTransaction = async (actualTransaction,updatedTransaction) => {
     const envelopeTransaction = await isValidTransaction(updatedTransaction)
+    if (envelopeTransaction instanceof Array) return envelopeTransaction
     if (envelopeTransaction) {
         const envelopeBudget = envelopeTransaction.amount
         const updateTransactionBudget = updatedTransaction.amount
@@ -111,29 +115,14 @@ const updateTransaction = async (actualTransaction,updatedTransaction) => {
         if (actualTransaction.envelope_id != envelopeTransaction.envelope_id){
             if (updateTransactionBudget > envelopeBudget) return ["envelope doesn't have the budget",null]
             const envelopeToUpdate = await envelopes.getSpecificEnvelope('id',actualTransaction.envelope_id)
-            // const update = {
-            //     "category" : envelopeToUpdate.envelope_name,
-            //     "budget" : envelopeToUpdate.amount + actualTransactionBudget
-            // }
-            // await envelopes.updateEnvelope(envelopeToUpdate, update)
             const restoredBudget = envelopeToUpdate.amount + actualTransactionBudget
             updateEnevelopeProcess(envelopeToUpdate.envelope_name, restoredBudget , envelopeToUpdate)
             const updatedBudget = envelopeBudget - updateTransactionBudget
-            // const updatedEnvelope = {
-            //     "category" : envelopeTransaction.envelope_name,
-            //     "budget" : envelopeBudget - updateTransactionBudget
-            // }
-            // await envelopes.updateEnvelope(envelopeTransaction,updatedEnvelope)
             updateEnevelopeProcess(envelopeTransaction.envelope_name, updatedBudget , envelopeTransaction)
         } else {
             const transactionVariation = updateTransactionBudget - actualTransactionBudget
             if (transactionVariation != 0){
                 if(transactionVariation > envelopeBudget) return ["envelope doesn't have the budget",null]
-                // const newUpdate = {
-                //     "category" : envelopeTransaction.envelope_name,
-                //     "budget" : envelopeBudget - transactionVariation
-                // }
-                // await envelopes.updateEnvelope(envelopeTransaction, newUpdate)
                 const budgetCorrection = envelopeBudget - transactionVariation
                 updateEnevelopeProcess(envelopeTransaction.envelope_name, budgetCorrection , envelopeTransaction)
             }
