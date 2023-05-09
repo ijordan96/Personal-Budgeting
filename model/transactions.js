@@ -2,7 +2,7 @@ const envelopes = require('../model/envelopes')
 
 const Pool = require('pg').Pool
 const pool = new Pool({
-    user: 'postgres',
+    user: 'XXXXXX',
     host: 'localhost',
     database: 'envelopes',
     password: 'XXXXX',
